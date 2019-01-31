@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-navbar [hideBackButton]="isTodoList">
+    <ion-title>{{ isTodoList ? 'Todo list' : note.title }}</ion-title>
+    <ion-buttons end>
+      <button (click)="addTodo()"><ion-icon name="add"></ion-icon></button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <ion-item-sliding *ngFor="let note of items">
+
+      <ion-item>
+        <div class="note-container">
+          <div>
+            <p class="note-title">{{note.title}}</p>
+            <p>{{note.description}}</p>
+          </div>
+          <button ion-button icon-only (click)="editNote(note)" light>
+            <ion-icon name="arrow-dropright"></ion-icon>
+          </button>
+        </div>
+      </ion-item>
+
+      <ion-item-options>
+        <button ion-button icon-only (click)="editNote(note)" light>
+          <ion-icon name="paper"></ion-icon>
+        </button>
+        <button ion-button icon-only (click)="deleteNote(note)" danger>
+          <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+
+    </ion-item-sliding>
+
+  </ion-list>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isTodoList">
+    <ion-buttons end>
+      <button ion-button color="save">
+        <ion-icon [name]="isCheckDone ? 'checkbox-outline' : 'checkbox'"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="isTodoList">
+    <ion-buttons end>
+      <button ion-button>
+        <ion-icon name="person"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

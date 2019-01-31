@@ -1,0 +1,16 @@
+todo-list {
+  background-color: white;
+  .note-title {
+    color: black;
+    font-size: 1.7rem;
+  }
+
+  .note-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    align-content: stretch;
+  }
+}
