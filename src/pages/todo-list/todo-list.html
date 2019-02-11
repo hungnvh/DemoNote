@@ -1,8 +1,8 @@
 <ion-header>
   <ion-navbar [hideBackButton]="isTodoList">
-    <ion-title>{{ isTodoList ? 'Todo list' : note.title }}</ion-title>
+    <ion-title>{{ isTodoList ? 'Todo list' : todoSelected.title }}</ion-title>
     <ion-buttons end>
-      <button (click)="addTodo()"><ion-icon name="add"></ion-icon></button>
+      <button (click)="isTodoList ? addTodo() : addNoteOfTodo()"><ion-icon name="add"></ion-icon></button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -10,14 +10,13 @@
 <ion-content>
 
   <ion-list>
-
-    <ion-item-sliding *ngFor="let note of items">
+    <ion-item-sliding *ngFor="let note of todos">
 
       <ion-item>
         <div class="note-container">
           <div>
-            <p class="note-title">{{note.title}}</p>
-            <p>{{note.description}}</p>
+            <p class="note-title" [ngStyle]="isTodoList && note.complete ? {'text-decoration': 'line-through'} : '' ">{{isTodoList ? note.title : note.text}}</p>
+            <!--<p>{{note.description}}</p>-->
           </div>
           <button ion-button icon-only (click)="editNote(note)" light>
             <ion-icon name="arrow-dropright"></ion-icon>
@@ -29,7 +28,7 @@
         <button ion-button icon-only (click)="editNote(note)" light>
           <ion-icon name="paper"></ion-icon>
         </button>
-        <button ion-button icon-only (click)="deleteNote(note)" danger>
+        <button ion-button icon-only (click)="comfirDelete(note)" danger>
           <ion-icon name="trash"></ion-icon>
         </button>
       </ion-item-options>
@@ -43,8 +42,9 @@
 <ion-footer>
   <ion-toolbar *ngIf="!isTodoList">
     <ion-buttons end>
-      <button ion-button color="save">
-        <ion-icon [name]="isCheckDone ? 'checkbox-outline' : 'checkbox'"></ion-icon>
+      <button ion-button color="save" (click)="checkDone()">
+        <ion-icon *ngIf="todoSelected && todoSelected.complete" [name]="'checkbox'"></ion-icon>
+        <ion-icon *ngIf="todoSelected && !todoSelected.complete" [name]="'checkbox-outline'"></ion-icon>
       </button>
     </ion-buttons>
   </ion-toolbar>

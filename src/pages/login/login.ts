@@ -1,6 +1,9 @@
 import {Component, Input} from '@angular/core';
 import { NavController } from 'ionic-angular';
 import {Headers, Http} from "@angular/http";
+import { LoadingController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+
 import {TodoList} from "../todo-list/todo-list";
 import {User} from "../../model/user";
 
@@ -15,46 +18,72 @@ export class LoginPage {
   headersData = new Headers();
 
   constructor(public navCtrl: NavController,
-              private http: Http) {
+              private http: Http,
+              public loadingCtrl: LoadingController,
+              private storage: Storage) {
     this.headersData.append("Accept", 'application/json');
     this.headersData.append('Content-Type', 'application/json' );
+    this.autoLogin();
+  }
+
+  autoLogin() {
+    this.storage.get('currentUser').then((val) => {
+      if(val) {
+        this.navCtrl.push(TodoList, {user: val, isTodoList: true});
+      }
+    });
   }
 
   signUp() {
     if (!this.username || !this.password) {
       return
     }
-    // "email": "customer001@email.com",
-    //   "password": "123456789"
     let postData = {
       "email": this.username,
       "password": this.password
     }
+
+    const loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+
+    loading.present();
 
     this.http.post("https://api.todo.ql6625.fr/api/Accounts", postData, {headers: this.headersData})
       .subscribe(data => {
         console.log(data);
+        loading.dismiss();
       }, error => {
         console.log(error);
+        loading.dismiss();
       });
   }
 
   signIn() {
-    if (!this.username || !this.password) {
-      return
-    }
+    // if (!this.username || !this.password) {
+    //   return
+    // }
     let postData = {
-      "email": this.username,
+      "username": this.username,
       "password": this.password
+      // "email": "admin",
+      // "password": "test"
     };
+    const loading = this.loadingCtrl.create({
+      content: 'Please wait...'
+    });
+
+    loading.present();
     this.http.post("https://api.todo.ql6625.fr/api/Accounts/login", postData, {headers: this.headersData})
       .subscribe(data => {
-        console.log(data);
-        let user: User = data['_body'];
+        loading.dismiss();
+        let user: User = JSON.parse(data['_body']);
+        this.storage.set('accesstoken', user.id);
+        this.storage.set('currentUser', user);
         this.navCtrl.push(TodoList, {user: user, isTodoList: true});
       }, error => {
+        loading.dismiss();
         console.log(error);
       });
   }
-
 }
