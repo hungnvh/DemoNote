@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController, NavParams } from 'ionic-angular';
 import {Todo} from "../../model/todo";
-import {Http} from "@angular/http";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { LoadingController } from 'ionic-angular';
 
@@ -18,13 +18,13 @@ export class TodoList {
   todoSelected: Todo;
   isTodoList: boolean;
   loading: any;
-  headersData = new Headers();
+  headersData = new HttpHeaders();
   callback: any;
 
   constructor(public navCtrl: NavController,
               public alertCtrl: AlertController,
               private navParams: NavParams,
-              private http: Http,
+              private http: HttpClient,
               private storage: Storage,
               public loadingCtrl: LoadingController,) {
     // this.user = navParams.get('user');
@@ -52,7 +52,7 @@ export class TodoList {
       this.showLoading();
       this.http.get(urlString,{headers: this.headersData})
         .subscribe(data => {
-          this.todos = JSON.parse(data['_body']);
+          this.todos = data as Todo[];
           console.log("loadNotes", this.todos);
           this.loading.dismiss();
         }, error => {
@@ -100,7 +100,7 @@ export class TodoList {
       let urlString = "https://api.todo.ql6625.fr/api/Todos/" + this.todoSelected.id + "/notes?access_token=" + user.id;
       this.http.post(urlString, {text: text, todoId: this.todoSelected.id}, {headers: this.headersData})
         .subscribe(data => {
-          let todo: Todo = JSON.parse(data['_body']);
+          let todo: Todo = data as Todo;
           this.todos.push(todo);
           this.loading.dismiss();
         }, error => {
@@ -116,7 +116,7 @@ export class TodoList {
       this.showLoading();
       this.http.get(urlString,{headers: this.headersData})
         .subscribe(data => {
-          this.todos = JSON.parse(data['_body']);
+          this.todos = data as Todo[];
           console.log("loadTodos", this.todos);
           this.loading.dismiss();
         }, error => {
@@ -163,11 +163,11 @@ export class TodoList {
       const urlString = "https://api.todo.ql6625.fr/api/Todos/replaceOrCreate?access_token=" + user.id;
       const title = isAdd ? text : this.todoSelected.title;
       const complete = isAdd ? false : this.todoSelected.complete;
-      const bodyData = {title: text, accountId: user.userId, complete: complete};
+      const bodyData = {title: title, accountId: user.userId, complete: complete};
       this.http.post(urlString, bodyData, {headers: this.headersData})
         .subscribe(data => {
           if(isAdd) {
-            let todo: Todo = JSON.parse(data['_body']);
+            let todo: Todo = data as Todo;
             this.todos.push(todo);
           } else {
             this.navCtrl.pop();
